@@ -31,39 +31,53 @@ app.get("/youtubers/:id", (req, res) => {
   id = parseInt(id);
   console.log(db.get(id));
   if (db.get(id) === undefined) {
-    res.json({ message: `진짜 지성합니다... 못찾겠어요` });
+    res.status(404).json({ message: `진짜 지성합니다... 못찾겠어요` });
   } else {
     res.json(db.get(id));
   }
 });
 
 app.post("/youtubers", (req, res) => {
-  let channelTitle = req.body.channelTitle;
-  db.set(index++, {
-    channelTitle: channelTitle,
-    sub: "0명",
-    videoNum: "0개",
-  });
-  res.json({ meessage: `${channelTitle}님아 환영합니다` });
+  const channelTitle = req.body.channelTitle;
+  if (channelTitle) {
+    db.set(index++, {
+      channelTitle: channelTitle,
+      sub: "0명",
+      videoNum: "0개",
+    });
+    res.status(201).json({ meessage: `${channelTitle}님아 환영합니다` });
+  } else {
+    res.status(404).json();
+  }
 });
 
 app.get("/youtubers", (req, res) => {
   var youtubers = {}; // 클린코드를 지향한다면 복수형과 단수형의 구분을 명확히하자
-  db.forEach((youtuber, index) => {
-    youtubers[index] = youtuber;
-  });
-  res.json(youtubers);
+  if (db.size !== 0) {
+    // map 객체는 비어 있는 경우를 undefined로 받지 않는다
+    db.forEach((value, key) => {
+      youtubers[key] = value;
+    });
+    res.json(youtubers);
+  } else {
+    res.status(404).json({
+      message: "오류 발생",
+    });
+  }
 });
 
 app.delete("/youtubers/:id", (req, res) => {
   let id = req.params.id;
   id = parseInt(id);
-  if (db.get(id) === undefined) {
-    res.json({ message: "삭제할 아이디를 찾을 수 없어요" });
-  } else {
+  let youtuber = db.get(id);
+  if (youtuber) {
     let youtuber = db.get(id);
-    res.json({ message: `${youtuber.channelTitle}님 그동안 즐거웠습니다…` });
+    res.json({
+      message: `${youtuber.channelTitle}님 그동안 즐거웠습니다…`,
+    });
     db.delete(id);
+  } else {
+    res.json({ message: "삭제할 아이디를 찾을 수 없어요" });
   }
 });
 app.delete("/youtubers", (req, res) => {
@@ -71,7 +85,7 @@ app.delete("/youtubers", (req, res) => {
     db.clear();
     res.json({ message: "전체 유튜버가 삭제되었습니다....." });
   } else {
-    res.json({ message: "삭제할 유튜버가 없긴 합니다" });
+    res.status(404).json({ message: "삭제할 유튜버가 없긴 합니다" });
   }
 });
 app.put("/youtubers/:id", (req, res) => {
