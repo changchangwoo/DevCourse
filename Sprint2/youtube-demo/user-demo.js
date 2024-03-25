@@ -4,7 +4,37 @@ app.use(express.json());
 app.listen(7777);
 const db = new Map();
 let idx = 1;
+
+function isExisted(obj) {
+  if (Object.keys(obj).length === 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
 // 로그인
+app.post("/login", (req, res) => {
+  // userId가 디비에 저장된 회원인지 확인
+  // pwd도 맞는지 비교
+  const { userId, password } = req.body;
+  let loginUser = {};
+
+  db.forEach((value) => {
+    if (value.userId === userId) {
+      loginUser = value;
+    }
+  });
+  if (isExisted(loginUser)) {
+    console.log("같은거 찾았다");
+    if (loginUser.password === password) {
+      console.log("패스워드도 같다");
+    } else {
+      console.log("패스워드는 틀렸다");
+    }
+  } else {
+    console.log("틀렸다!");
+  }
+});
 
 // 회원가입
 app.post("/join", (req, res) => {

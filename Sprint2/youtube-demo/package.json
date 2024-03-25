@@ -101,7 +101,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./user-demo.js"
+    "dev": "nodemon ./user-demo.js",
+    "channel": "nodemon ./channel-demo.js"
   },
   "author": "",
   "license": "ISC"
