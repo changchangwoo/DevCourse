@@ -1,34 +1,48 @@
 const express = require("express");
-const app = express();
-app.use(express.json());
-app.listen(7777);
+const router = express.Router();
+router.use(express.json());
 const db = new Map();
 let idx = 1;
 
-app
-  .route("/channels")
+const notFoundChannel = () => {
+  return "조회할 채널이 없습니다";
+};
+router
+  .route("/")
   .get((req, res) => {
-    if (db.size) {
-      var channels = [];
+    let { userId } = req.body;
+
+    if (db.size && userId) {
+      let channels = [];
       db.forEach((value, key) => {
-        channels.push(value);
+        if (value.userId === userId) channels.push(value);
       });
-      res.json(channels); // JSON Array
+      if (channels.length !== 0) {
+        res.status(200).json(channels); // JSON Array
+      } else {
+        res.status(404).json({ message: notFoundChannel() });
+      }
     } else {
       res.status(404).json({
-        message: `조회할 채널이 없습니다`,
+        message: notFoundChannel(),
       });
     }
   }) // 전체 조회
   .post((req, res) => {
-    db.set(idx++, req.body);
-    res.status(201).json({
-      message: `${db.get(idx - 1).channelTitle}채널을 응원합니다!`,
-    });
+    if (req.body.channelTitle) {
+      db.set(idx++, req.body);
+      res.status(201).json({
+        message: `${db.get(idx - 1).channelTitle}채널을 응원합니다!`,
+      });
+    } else {
+      res.status(404).json({
+        message: `오류발생`,
+      });
+    }
   }); // 생성;
 
-app
-  .route("/channels/:id")
+router
+  .route("/:id")
   .get((req, res) => {
     let { id } = req.params;
     id = parseInt(id);
@@ -36,7 +50,7 @@ app
       res.status(200).json(db.get(id));
     } else {
       res.status(404).json({
-        message: "채널 정보를 찾을 수 없습니다.",
+        message: notFoundChannel(),
       });
     }
   }) // 개별 조회
@@ -70,7 +84,9 @@ app
       });
     } else {
       res.status(404).json({
-        message: "채널 정보를 찾을 수 없습니다.",
+        message: notFoundChannel(),
       });
     }
   }); // 개별 삭제;
+
+module.exports = router;

@@ -1,7 +1,6 @@
 const express = require("express");
-const app = express();
-app.use(express.json());
-app.listen(7777);
+const router = express.Router();
+router.use(express.json());
 const db = new Map();
 let idx = 1;
 
@@ -13,7 +12,7 @@ function isExisted(obj) {
   }
 }
 // 로그인
-app.post("/login", (req, res) => {
+router.post("/login", (req, res) => {
   // userId가 디비에 저장된 회원인지 확인
   // pwd도 맞는지 비교
   const { userId, password } = req.body;
@@ -25,19 +24,24 @@ app.post("/login", (req, res) => {
     }
   });
   if (isExisted(loginUser)) {
-    console.log("같은거 찾았다");
     if (loginUser.password === password) {
-      console.log("패스워드도 같다");
+      res.status(400).json({
+        message: "로그인 성공",
+      });
     } else {
-      console.log("패스워드는 틀렸다");
+      res.status(400).json({
+        message: "비밀번호가 틀렸습니다",
+      });
     }
   } else {
-    console.log("틀렸다!");
+    res.status(400).json({
+      message: "회원 정보가 없습니다",
+    });
   }
 });
 
 // 회원가입
-app.post("/join", (req, res) => {
+router.post("/join", (req, res) => {
   if (req.body == !{}) {
     res.status(400).json({
       message: `입력 값을 다시 확인해주세요`,
@@ -53,13 +57,12 @@ app.post("/join", (req, res) => {
 
 // 회원 개별 조회 및 삭제
 // route 메소드 사용
-app
+router
   .route("/users/:id")
   .get((req, res) => {
-    let { id } = req.params;
-    id = parseInt(id);
-    const user = db.get(id);
-    if (user === undefined) {
+    let { userId } = req.body;
+    const user = db.get(userId);
+    if (!user) {
       res.status(404).json({
         message: "회원 정보가 없습니다",
       });
@@ -71,10 +74,9 @@ app
     }
   })
   .delete((req, res) => {
-    let { id } = req.params;
-    id = parseInt(id);
-    const user = db.get(id);
-    if (user === undefined) {
+    let { userId } = req.body;
+    const user = db.get(userId);
+    if (!user) {
       res.status(404).json({
         message: "회원 정보가 없습니다",
       });
@@ -85,3 +87,5 @@ app
       });
     }
   });
+
+module.exports = router;
