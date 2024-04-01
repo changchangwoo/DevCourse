@@ -1,8 +1,7 @@
 const express = require("express");
+const conn = require("../mariadb.js");
 const router = express.Router();
 router.use(express.json());
-const db = new Map();
-let idx = 1;
 
 const notFoundChannel = () => {
   return "조회할 채널이 없습니다";
@@ -10,49 +9,46 @@ const notFoundChannel = () => {
 router
   .route("/")
   .get((req, res) => {
-    let { userId } = req.body;
-
-    if (db.size && userId) {
-      let channels = [];
-      db.forEach((value, key) => {
-        if (value.userId === userId) channels.push(value);
+    // 전체 조회
+    let { user_id } = req.body;
+    let sql = `SELECT * FROM channels WHERE user_id =?`;
+    user_id &&
+      conn.query(sql, user_id, (err, results, fields) => {
+        if (results.length) {
+          res.json(results);
+        } else {
+          res.status(404).json({
+            message: notFoundChannel(),
+          });
+        }
       });
-      if (channels.length !== 0) {
-        res.status(200).json(channels); // JSON Array
-      } else {
-        res.status(404).json({ message: notFoundChannel() });
-      }
-    } else {
-      res.status(404).json({
-        message: notFoundChannel(),
-      });
-    }
-  }) // 전체 조회
+  })
   .post((req, res) => {
-    if (req.body.channelTitle) {
-      db.set(idx++, req.body);
-      res.status(201).json({
-        message: `${db.get(idx - 1).channelTitle}채널을 응원합니다!`,
+    // 생성;
+    let { name, user_id } = req.body;
+    if ((name, user_id)) {
+      let sql = `INSERT INTO channels (name, user_id) VALUES (?,?)`;
+      let values = [name, user_id];
+      conn.query(sql, values, (err, results) => {
+        res.status(201).json(results);
       });
     } else {
       res.status(404).json({
         message: `오류발생`,
       });
     }
-  }); // 생성;
+  });
 
 router
   .route("/:id")
   .get((req, res) => {
     let { id } = req.params;
     id = parseInt(id);
-    if (db.get(id)) {
-      res.status(200).json(db.get(id));
-    } else {
-      res.status(404).json({
-        message: notFoundChannel(),
-      });
-    }
+    let sql = `SELECT * FROM channels WEHRE id = ?`;
+    conn.query(sq, id, (err, results) => {
+      if (results.length) res.status(200).json(results);
+      else notFoundChannel();
+    });
   }) // 개별 조회
   .put((req, res) => {
     let { id } = req.params;
@@ -75,18 +71,18 @@ router
   .delete((req, res) => {
     let { id } = req.params;
     id = parseInt(id);
-    let channel = db.get(id);
-
-    if (channel) {
-      db.delete(id);
-      res.status(200).json({
-        message: `${channelTitle}이 정상적으로 삭제되었습니다.`,
-      });
-    } else {
-      res.status(404).json({
-        message: notFoundChannel(),
-      });
-    }
+    let sql = `DELETE FROM channels WHERE id = ?`;
+    conn.query(sql, id, (err, results, fields) => {
+      if (results) {
+        res.status(200).json({
+          message: `${id}님 그동안 감사했습니다!`,
+        });
+      } else {
+        res.status(404).json({
+          message: `삭제 할 이메일을 찾을 수 없습니다`,
+        });
+      }
+    });
   }); // 개별 삭제;
 
 module.exports = router;
