@@ -43,11 +43,15 @@ router.post(
             email: loginUser.email,
             name: loginUser.name,
           },
-          process.env.PRIVATE_KEY
+          process.env.PRIVATE_KEY,
+          {
+            expiresIn: "5m", // 5m = 5분, 1h = 1시간
+            issuer: "changwooLee",
+          }
         );
+        res.cookie("token", token);
         res.status(200).json({
           message: `${loginUser.name}님 로그인 되셨습니다`,
-          token: token,
         });
       } else {
         res.status(404).json({
