@@ -18,9 +18,17 @@ const finalSpaceCharacters = [
 ];
 
 function App() {
+  const [first, setfirst] = useState(0)
+
+
   const [characters, setCharacters] = useState(finalSpaceCharacters);
 
   const handleEnd = (result) => {
+    console.log(first)
+    setfirst(()=>{
+      return first+1
+    })
+    console.log(first)
     console.log(result);
     if (!result.destination) return;
 
