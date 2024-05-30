@@ -17,7 +17,7 @@ export const state = {
 };
 
 export const ThemeContext = createContext<State>(state);
-export const BookStoreThemeProvicer = ({
+export const BookStoreThemeProvider = ({
   children,
 }: {
   children: ReactNode;
