@@ -9,7 +9,7 @@ export type ColorKey =
   | "text";
 export type HeadingSize = "large" | "medium" | "small";
 export type ButtonSize = "large" | "medium" | "small";
-export type ButtonScheme = "primary" | "normal";
+export type ButtonScheme = "primary" | "normal" | "like";
 export type LayoutWidth = "large" | "medium" | "small";
 
 interface Theme {
@@ -29,8 +29,7 @@ interface Theme {
   buttonScheme: {
     [key in ButtonScheme]: {
       color: string;
-      backgroundColor: string;
-    };
+      backgroundColor: string;    };
   };
   borderRadius: {
     default: string;
@@ -40,6 +39,7 @@ interface Theme {
       [key in LayoutWidth]: string;
     };
   };
+  
 }
 
 export const light: Theme = {
@@ -86,6 +86,10 @@ export const light: Theme = {
       color: "black",
       backgroundColor: "lightgrey",
     },
+    like: {
+      color: "white",
+      backgroundColor: "coral",
+    }
   },
   borderRadius: {
     default: "4px",
