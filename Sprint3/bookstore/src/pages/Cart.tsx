@@ -31,19 +31,19 @@ const Cart = () => {
 
   const handleOrder = () => {
     if (checkedItems.length === 0) {
-        showAlert("주문할 상품을 선택해 주세요.");
-        return;
+      showAlert("주문할 상품을 선택해 주세요.");
+      return;
     }
-    const orderData : Omit<OrderSheet, "delivery"> = {
-        items : checkedItems,
-        totalQuantity,
-        totalPrice,
-        firstBookTitle: carts[0].title,
-    }
-    showConfirm("주문하시겠습니까?", ()=>{
-        navigate("/order", {state : orderData});
-})
-  }
+    const orderData: Omit<OrderSheet, "delivery"> = {
+      items: checkedItems,
+      totalQuantity,
+      totalPrice,
+      firstBookTitle: carts[0].title,
+    };
+    showConfirm("주문하시겠습니까?", () => {
+      navigate("/order", { state: orderData });
+    });
+  };
 
   const totalQuantity = useMemo(() => {
     return carts.reduce((acc, cart) => {
@@ -80,7 +80,10 @@ const Cart = () => {
               ))}
             </div>
             <div className="summary">
-              <CartSummary totalQuantity={totalQuantity} totalPrice={totalPrice} />
+              <CartSummary
+                totalQuantity={totalQuantity}
+                totalPrice={totalPrice}
+              />
               <Button onClick={handleOrder} size="large" scheme="primary">
                 주문하기
               </Button>
@@ -99,7 +102,7 @@ const Cart = () => {
   );
 };
 
-const CartStyle = styled.div`
+export const CartStyle = styled.div`
   display: flex;
   gap: 24px;
   justify-content: center;
@@ -116,7 +119,39 @@ const CartStyle = styled.div`
     display: flex;
     flex-direction: column;
     gap: 24px;
+  }
 
+  .order-info {
+    h1 {
+      padding: 0 0 24px 0;
+    }
+    border: 1px solid ${({ theme }) => theme.color.border};
+    border-radius: ${({ theme }) => theme.borderRadius.default};
+    padding: 12px;
+  }
+
+  .delivery {
+    fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0 0 12px 0;
+      display: flex;
+      label {
+        width: 80px;
+      }
+      .input {
+        flex: 1;
+        input {
+          width: 100%;
+        }
+      }
+    }
+    .error-text {
+      color : red;
+      margin : 0;
+      padding: 0 0 12px 0;
+      text-align: right;
+    }
   }
 `;
 

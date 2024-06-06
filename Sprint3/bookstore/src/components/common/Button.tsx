@@ -3,17 +3,19 @@ import styled from "styled-components";
 import { ButtonScheme, ButtonSize } from "../../style/theme";
 
 interface Props {
+  type?: 'button' | 'submit' | 'reset';
   children: React.ReactNode;
   size: ButtonSize;
   scheme: ButtonScheme;
   disabled?: boolean;
   isLoading?: boolean;
-  onClick?: (event:Event) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Button = ({ children, size, scheme, disabled, isLoading, onClick }: Props) => {
+const Button = ({type, children, size, scheme, disabled, isLoading, onClick }: Props) => {
   return (
     <ButtonStyle
+      type={type}
       size={size}
       scheme={scheme}
       disabled={disabled}
