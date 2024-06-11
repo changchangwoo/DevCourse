@@ -7,6 +7,15 @@ import "sanitize.css";
 import { GlobalStyle } from "./style/global";
 import { ThemeContext, state } from "./context/themeContext";
 
+
+async function mountApp() {
+  if (process.env.NODE_ENV === 'development') {
+    const { worker } = require("./mock/browser");
+    await worker.start();
+  }
+    
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
