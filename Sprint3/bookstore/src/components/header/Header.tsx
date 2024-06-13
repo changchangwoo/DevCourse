@@ -1,10 +1,12 @@
 import { styled } from "styled-components";
 import logo from "../../assets/images/Logo.png";
-import { FaSignInAlt, FaRegUser } from "react-icons/fa";
+import { FaSignInAlt, FaRegUser, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCategory } from "../../hooks/useCategory";
 import { useAuthStore } from "../../store/authStore";
 import Button from "../common/Button";
+import DropDown from "../common/DropDown";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const Header = () => {
   const { category } = useCategory();
@@ -31,7 +33,9 @@ const Header = () => {
           </ul>
         </nav>
         <nav className="auth">
-          {isloggedIn ? (
+          <DropDown toggleButton={<FaUserCircle/>}>
+            <>
+            {isloggedIn ? (
             <ul>
               <li><Link to="/cart"> 장바구니</Link> </li>
               <li><Link to="/orderlist"> 주문내역</Link> </li>
@@ -51,6 +55,11 @@ const Header = () => {
               </li>
             </ul>
           )}
+                <ThemeSwitcher/>
+
+            </>
+          </DropDown>
+    
         </nav>
       </HeaderStyle>
     </>
@@ -94,7 +103,7 @@ const HeaderStyle = styled.header`
   .auth {
     ul {
       display: flex;
-      gap: 16px;
+      width: 100px;
       li {
         a, button{
           font-size: 1rem;
@@ -102,6 +111,8 @@ const HeaderStyle = styled.header`
           text-decoration: none;
           display: flex;
           align-items: center;
+          justify-content: center;
+          width: 100%;
           line-height: 1;
           background: none;
           border: 0;

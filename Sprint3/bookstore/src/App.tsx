@@ -15,6 +15,7 @@ import OrderList from "./pages/OrderList";
 import ThemeSwitcher from "./components/header/ThemeSwitcher";
 import { QueryClientProvider } from "react-query";
 import { querytClient } from "./api/queryClient";
+import ToastContainer from "./components/common/toast/ToastContainer";
 
 const routeList = [
   {
@@ -70,6 +71,7 @@ function App() {
     <>
       <QueryClientProvider client={querytClient}>
         <BookStoreThemeProvider>
+          <ToastContainer/>
           {/* <ThemeSwitcher/> */}
           <RouterProvider router={router} />
         </BookStoreThemeProvider>

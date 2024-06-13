@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useBook } from "../hooks/useBook";
@@ -12,6 +12,8 @@ import LikeButton from "../components/book/LikeButton";
 import AddToCart from "../components/book/AddToCart";
 import BookReview from "@/components/book/BookReview";
 import { addReview } from "@/mock/review";
+import { Tabs, Tab } from "@/components/common/Tabs";
+import Modal from "@/components/common/Modal";
 
 const bookInfoList = [
   {
@@ -53,51 +55,66 @@ const bookInfoList = [
 const BookDetail = () => {
   const { bookId } = useParams();
   const { book, likeToggle, reviews, addReview } = useBook(bookId);
+  const [isImgOpen, setIsImgOpen] = useState(false);
   if (!book) return null;
 
   return (
     <BookDetailStyle>
-      <header>
-        <img src={getImgSrc(book.img)} alt={book.title} />
-      <div className="info">
-        <Title size="large" color="text">
-          {book.title}
-        </Title>
-        {bookInfoList.map((item) => (
-          <dl>
-            <dt>{item.label}</dt>
-            <dd>
-              {item.filter
-                ? item.filter(book)
-                : book[item.key as keyof IBookDetail]}
-            </dd>
-          </dl>
-        ))}
-        <p className="summary">{book.summary}</p>
-        <div className="like">
-            <LikeButton book={book} onClick={likeToggle}/>
+      <header className="header">
+        <div className="img" >
+        <img src={getImgSrc(book.img)} alt={book.title} onClick={()=>{
+          setIsImgOpen(true)
+        }} />
+          <Modal isOpen={isImgOpen} onClose={()=>setIsImgOpen(false)}>
+          <img src={getImgSrc(book.img)} alt={book.title} />
+          </Modal>
         </div>
-        <div className="add-cart">
-            <AddToCart book={book}/>
+        <div className="info">
+          <Title size="large" color="text">
+            {book.title}
+          </Title>
+          {bookInfoList.map((item) => (
+            <dl>
+              <dt>{item.label}</dt>
+              <dd>
+                {item.filter
+                  ? item.filter(book)
+                  : book[item.key as keyof IBookDetail]}
+              </dd>
+            </dl>
+          ))}
+          <p className="summary">{book.summary}</p>
+          <div className="like">
+            <LikeButton book={book} onClick={likeToggle} />
+          </div>
+          <div className="add-cart">
+            <AddToCart book={book} />
+          </div>
         </div>
-      </div>
       </header>
+
       <div className="content">
-        <Title size="medium">상세 설명</Title>
-        <EllipsisBox linelimit={4}>{book.detail}</EllipsisBox>
-
-        <Title size="medium">목차</Title>
-        <p className="index">{book.contents}</p>
-
-        <Title size="medium">리뷰</Title>
-        <BookReview reviews={reviews} onAdd={addReview}/>
+        <Tabs>
+          <Tab title="상세 설명">
+            <Title size="medium">상세 설명</Title>
+            <EllipsisBox linelimit={4}>{book.detail}</EllipsisBox>
+          </Tab>
+          <Tab title="목차">
+            <Title size="medium">목차</Title>
+            <p className="index">{book.contents}</p>
+          </Tab>
+          <Tab title="리뷰">
+            <Title size="medium">리뷰</Title>
+            <BookReview reviews={reviews} onAdd={addReview} />
+          </Tab>
+        </Tabs>
       </div>
-   </BookDetailStyle>
+    </BookDetailStyle>
   );
 };
 
 const BookDetailStyle = styled.div`
-    header {
+  header {
     display: flex;
     align-items: start;
     gap: 24px;
@@ -105,6 +122,7 @@ const BookDetailStyle = styled.div`
 
     .img {
       flex: 1;
+      background-color: black;
       img {
         width: 100%;
         height: auto;
@@ -131,12 +149,12 @@ const BookDetailStyle = styled.div`
   }
   .content {
     .detail {
-        height: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 4;
-        -webkit-box-orient: vertical;
+      height: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
     }
   }
 `;
